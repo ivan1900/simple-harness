@@ -1,0 +1,9 @@
+{
+  "name": "simple-harness",
+  "version": "1.0.0",
+  "main": "index.js",
+  "bin": {
+    "simple-harness": "./index.js"
+  },
+  "type": "module"
+}
