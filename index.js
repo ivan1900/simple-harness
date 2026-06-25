@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { cp, mkdir } from 'node:fs/promises';
+import { access, cp, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +12,15 @@ const targetDir = process.cwd();
 const REQUIRED_PATHS = ['AGENTS.md', '.agents', 'docs'];
 const EMPTY_DIRS = ['progress', 'specs'];
 
+async function pathExists(pathToCheck) {
+  try {
+    await access(pathToCheck);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function copyHarness() {
   for (const relativePath of REQUIRED_PATHS) {
     await cp(path.join(packageRoot, relativePath), path.join(targetDir, relativePath), {
@@ -21,7 +30,11 @@ async function copyHarness() {
   }
 
   for (const relativePath of EMPTY_DIRS) {
-    await mkdir(path.join(targetDir, relativePath), { recursive: true });
+    const emptyDirPath = path.join(targetDir, relativePath);
+
+    if (!(await pathExists(emptyDirPath))) {
+      await mkdir(emptyDirPath, { recursive: true });
+    }
   }
 }
 
